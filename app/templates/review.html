@@ -18,24 +18,30 @@
 
       <div id="Main" class='main'>
         <form id="movieForm">
-          <div id="mybutton">
-            <input type="text" class="form-control awesomplete" id="name" placeholder="Movie Name" oninput="getSuggestions()">
+          <div class="form-group">
+            <label for="inputName">Movie</label>
+            <input type="text" class="form-control awesomplete" id="inputName" placeholder="Movie Name" oninput="getSuggestions()" required>
+
             <br>
+
+            <label for="inputUsername">Username</label>
+            <input type="text" class="form-control" id="inputUsername" placeholder="superuser" required>
+
+            <br>
+
+            <label for="inputReview">Review</label>
+            <textarea id="inputReview" class="form-control" rows="3" required></textarea>
+      
+            <br>
+
+            <span id="rangeVal">3</span>
+            <input id="inputRangeSlider" type="range" min="0" max="5" step="1" oninput="showRatingValue(this.value)" onchange="showRatingValue(this.value)">
+
+
             <button id="submit" type="submit">Search</button> 
         </form>
         <br>
-        <div id="resultsQuantity">
 
-        </div>
-        <div id="pagesQuantity">
-
-        </div>
-        <div id="Result buttons" class='main'>
-          <br>
-          <button id="backBtn" type="button" onclick="goBack()">Back</button>
-          <textarea id="pageTb" cols="8" rows="1" ></textarea>
-          <button id="nextBtn" type="button" onclick="goNext()">Next</button>
-        </div>
         <div id="content">
         </div>
       </div>
@@ -53,7 +59,6 @@
     var timeout = null;
     var list = [];
     var form = document.getElementById('movieForm');
-
     Array.prototype.contains = function ( value ) {
         for (i in this) {
             if (this[i] == value) 
@@ -61,12 +66,10 @@
         }
         return false;
       }
-
     function getSuggestions(){
       
-      var input = document.getElementById("name");
+      var input = document.getElementById("inputName");
       movieName = input.value;
-
       if(timeout){
         clearTimeout(timeout);
       }
@@ -75,14 +78,11 @@
       }
     }
       
-
       function getSuggestionsLocalDb(){
         var url = "http://localhost:5000/movies/search?name=" + movieName;
         var xhr = new XMLHttpRequest();
        
         xhr.onreadystatechange = function () {
-
-
           //si no encuentra la pelicula en la base de datos local, la busca en movieDB
         if (this.readyState == 4 && this.status == 200) {
             showResults(JSON.parse(this.responseText));
@@ -92,21 +92,18 @@
            
           }
         };
-
         xhr.open("GET", url, true);
         xhr.send();
-
         function showResults(response) {
           if(list.contains(response.name)){
           }
           else 
             list.push(response.name);
-          var input = document.getElementById("name");
+          var input = document.getElementById("inputName");
           new Awesomplete(input, {list});
-          document.getElementById("name").focus();
+          document.getElementById("inputName").focus();
         }
       }
-
       function getSuggestionsServerDb(){
         var url = "https://api.themoviedb.org/3/search/movie" + "?api_key=" + api_key + "&query=" + movieName + "&page=" + "1";
         var xhr = new XMLHttpRequest();
@@ -118,11 +115,9 @@
           else if(this.readyState == 4 && this.status == 404){
           }
         };
-
         xhr.open("GET", url);
         xhr.send();
         
-
         function showResults(response) {
         for(var idx=0; idx<response.results.length; idx++){
             if(list.contains(response.results[idx].original_title)){
@@ -134,12 +129,11 @@
             
         }
       }
-      var input = document.getElementById("name");
+      var input = document.getElementById("inputName");
         new Awesomplete(input, {list});
-        document.getElementById("name").focus();
+        document.getElementById("inputName").focus();
       }
     }
-
     function insertarLocalDb(element){
     var xhr = new XMLHttpRequest();
     var url = "http://localhost:5000/movies/";
@@ -159,15 +153,48 @@
       form.append("poster", poster);
       xhr.send(form);
       function successFunction(response){
-        document.getElementById("name").focus();
+        document.getElementById("inputName").focus();
       }
       function errorFunction(){
-        document.getElementById("name").focus();
+        document.getElementById("inputName").focus();
       }
   }
-
-
     
+function showRatingValue(value) {
+        var rating = document.getElementById("rangeVal")
+        rating.innerHTML = value;
+      }
+
+    var form = document.getElementById('movieForm');
+    form.onsubmit = function(evt) {
+        evt.preventDefault();
+        
+        //var name = document.getElementById('name');
+        // Get data
+        //currentName = name.value;
+
+        //validateForm();
+        // currentPage = 1;
+        // get(currentName, currentPage);
+        resetForm();
+    };
+
+    function resetForm(){
+      var name = document.getElementById('inputName');
+      name.value = '';
+
+      var username = document.getElementById('inputUsername');
+      username.value = '';
+
+      var review = document.getElementById('inputReview');
+      review.value = '';
+
+      var rating = document.getElementById("inputRangeSlider")
+      rating.value = 3;
+
+      var rating = document.getElementById("rangeVal")
+        rating.innerHTML = 3;
+
+    }
   </script>
-  
 </html>
