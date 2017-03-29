@@ -20,10 +20,13 @@ def showallmovies():
 @movies.route('/search', methods=['GET'])
 def findmoviebyName():
     moviename = request.args.get('name')
-    movieresults = Movie.query.filter(Movie.Name.startswith(moviename)).count()
-    if movieresults>0:
-        movie = Movie.query.filter(Movie.Name.startswith(moviename)).first()
-        response = jsonify(movie.serialize())
+    moviecount = Movie.query.filter(Movie.Name.startswith(moviename)).count()
+    if moviecount>0:
+        movielist = []
+        movieresults = Movie.query.filter(Movie.Name.startswith(moviename)).all()
+        for i in movieresults:
+            movielist.append(i.serialize())
+        response = jsonify(movielist)
         return response
     else:
         return render_template('review.html'), 404

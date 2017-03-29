@@ -1,7 +1,6 @@
 <html>
 
   <head>
-      <!-- Latest compiled and minified CSS -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous">
       <link rel="stylesheet" href="../static/awesomplete.css" />
@@ -17,28 +16,28 @@
       <h1>Movie Search</h1>
 
       <div id="Main" class='main'>
-        <form id="movieForm">
+        <form id="movieForm" action="http://localhost:5000/reviews/" method="post">
           <div class="form-group">
             <label for="inputName">Movie</label>
-            <input type="text" class="form-control awesomplete" id="inputName" placeholder="Movie Name" oninput="getSuggestions()" required>
+            <input type="text" class="form-control awesomplete" id="inputName" placeholder="Movie Name" name="name" oninput="getSuggestions()" required>
 
             <br>
 
             <label for="inputUsername">Username</label>
-            <input type="text" class="form-control" id="inputUsername" placeholder="superuser" required>
+            <input type="text" class="form-control" id="inputUsername" name="user" placeholder="superuser" required>
 
             <br>
 
             <label for="inputReview">Review</label>
-            <textarea id="inputReview" class="form-control" rows="3" required></textarea>
+            <textarea id="inputReview" class="form-control" name="review" rows="3" required></textarea>
       
             <br>
 
             <span id="rangeVal">3</span>
-            <input id="inputRangeSlider" type="range" min="0" max="5" step="1" oninput="showRatingValue(this.value)" onchange="showRatingValue(this.value)">
+            <input id="inputRangeSlider" type="range" min="0" max="5" step="1" name="score" oninput="showRatingValue(this.value)" onchange="showRatingValue(this.value)">
 
 
-            <button id="submit" type="submit">Search</button> 
+            <button id="submit" type="submit">Add</button> 
         </form>
         <br>
 
@@ -74,7 +73,7 @@
         clearTimeout(timeout);
       }
       if(movieName.length>=2){
-        timeout = setTimeout(getSuggestionsLocalDb, 1000);
+        timeout = setTimeout(getSuggestionsLocalDb, 2000);
       }
     }
       
@@ -95,10 +94,14 @@
         xhr.open("GET", url, true);
         xhr.send();
         function showResults(response) {
-          if(list.contains(response.name)){
+          for(var idx = 0; idx<response.length && idx<3; idx++){
+            if(list.contains(response[idx].name)){
+              
+            }
+            else {
+              list.push(response[idx].name);
+            }
           }
-          else 
-            list.push(response.name);
           var input = document.getElementById("inputName");
           new Awesomplete(input, {list});
           document.getElementById("inputName").focus();
@@ -124,6 +127,7 @@
               
             }
           else {
+            if(idx<3)
             list.push(response.results[idx].original_title);
             insertarLocalDb(response.results[idx])
             
@@ -166,35 +170,5 @@ function showRatingValue(value) {
       }
 
     var form = document.getElementById('movieForm');
-    form.onsubmit = function(evt) {
-        evt.preventDefault();
-        
-        //var name = document.getElementById('name');
-        // Get data
-        //currentName = name.value;
-
-        //validateForm();
-        // currentPage = 1;
-        // get(currentName, currentPage);
-        resetForm();
-    };
-
-    function resetForm(){
-      var name = document.getElementById('inputName');
-      name.value = '';
-
-      var username = document.getElementById('inputUsername');
-      username.value = '';
-
-      var review = document.getElementById('inputReview');
-      review.value = '';
-
-      var rating = document.getElementById("inputRangeSlider")
-      rating.value = 3;
-
-      var rating = document.getElementById("rangeVal")
-        rating.innerHTML = 3;
-
-    }
   </script>
 </html>

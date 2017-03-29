@@ -7,5 +7,3 @@ class Config(object):
     SQLALCHEMY_MIGRATE_REPO = "sqlite:///db/db_repo/"
 
 
-
-
